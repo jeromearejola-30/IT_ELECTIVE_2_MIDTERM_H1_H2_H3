@@ -1,0 +1,30 @@
+﻿@model List<IT_ELECTIVE_2_MIDTERM_H1_H2_H3.Models.Entities.Product>
+
+@{
+    ViewData["Title"] = "Product Catalog";
+}
+
+<h2 class="mb-4">Product Catalog</h2>
+
+<div class="row">
+    @foreach (var product in Model)
+    {
+        <div class="col-md-3 mb-4">
+            <div class="card h-100 shadow-sm">
+                <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name" />
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">@product.Name</h5>
+                    <p class="card-text text-muted">@product.Description</p>
+                    <h6 class="mt-auto text-primary">$@product.Price.ToString("F2")</h6>
+                    <form asp-controller="Catalog" asp-action="AddToCart" method="post" class="mt-2">
+                        <input type="hidden" name="ProductId" value="@product.Id" />
+                        <div class="input-group">
+                            <input type="number" name="Quantity" value="1" min="1" class="form-control" />
+                            <button type="submit" class="btn btn-success">Add to Cart</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>
