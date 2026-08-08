@@ -1,0 +1,59 @@
+﻿@model IT_ELECTIVE_2_MIDTERM_H1_H2_H3.Models.Entities.ShoppingCart
+
+@{
+    ViewData["Title"] = "Shopping Cart";
+}
+
+<h2 class="mb-4">Your Shopping Cart</h2>
+
+@if (!Model.Items.Any())
+{
+    <div class="alert alert-info">Your cart is empty. <a asp-controller="Catalog" asp-action="Index">Go back to catalog</a>.</div>
+}
+else
+{
+    <table class="table table-bordered align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th style="width: 180px;">Quantity</th>
+                <th>Total</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.Product.Name</td>
+                    <td>$@item.Product.Price.ToString("F2")</td>
+                    <td>
+                        <form asp-controller="Cart" asp-action="UpdateQuantity" method="post" class="d-flex">
+                            <input type="hidden" name="ProductId" value="@item.Product.Id" />
+                            <input type="number" name="Quantity" value="@item.Quantity" min="1" class="form-control me-2" />
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Update</button>
+                        </form>
+                    </td>
+                    <td>$@item.TotalPrice.ToString("F2")</td>
+                    <td>
+                        <form asp-controller="Cart" asp-action="RemoveItem" method="post">
+                            <input type="hidden" name="productId" value="@item.Product.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" class="text-end fw-bold">Grand Total:</td>
+                <td colspan="2" class="fw-bold text-success">$@Model.GrandTotal.ToString("F2")</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="d-flex justify-content-between">
+        <a asp-controller="Catalog" asp-action="Index" class="btn btn-secondary">Continue Shopping</a>
+    </div>
+}
