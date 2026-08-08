@@ -1,24 +1,30 @@
 ﻿@model IT_ELECTIVE_2_MIDTERM_H1_H2_H3.Models.Entities.ShoppingCart
-
 @{
     ViewData["Title"] = "Shopping Cart";
 }
 
 <h2 class="mb-4">Your Shopping Cart</h2>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
 @if (!Model.Items.Any())
 {
-    <div class="alert alert-info">Your cart is empty. <a asp-controller="Catalog" asp-action="Index">Go back to catalog</a>.</div>
+    <div class="alert alert-info">Your cart is empty. <a asp-controller="Catalog" asp-action="Index">Browse Catalog</a></div>
 }
 else
 {
-    <table class="table table-bordered align-middle">
-        <thead class="table-dark">
+    <table class="table align-middle">
+        <thead>
             <tr>
                 <th>Product</th>
                 <th>Price</th>
-                <th style="width: 180px;">Quantity</th>
-                <th>Total</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -29,15 +35,15 @@ else
                     <td>@item.Product.Name</td>
                     <td>$@item.Product.Price.ToString("F2")</td>
                     <td>
-                        <form asp-controller="Cart" asp-action="UpdateQuantity" method="post" class="d-flex">
-                            <input type="hidden" name="ProductId" value="@item.Product.Id" />
-                            <input type="number" name="Quantity" value="@item.Quantity" min="1" class="form-control me-2" />
-                            <button type="submit" class="btn btn-sm btn-outline-primary">Update</button>
+                        <form asp-controller="Cart" asp-action="UpdateQuantity" method="post" class="d-flex align-items-center gap-2">
+                            <input type="hidden" name="productId" value="@item.Product.Id" />
+                            <input type="number" name="quantity" value="@item.Quantity" min="1" max="@item.Product.StockQuantity" class="form-control form-control-sm" style="width: 80px;" />
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">Update</button>
                         </form>
                     </td>
-                    <td>$@item.TotalPrice.ToString("F2")</td>
+                    <td>$@((item.Product.Price * item.Quantity).ToString("F2"))</td>
                     <td>
-                        <form asp-controller="Cart" asp-action="RemoveItem" method="post">
+                        <form asp-controller="Cart" asp-action="RemoveFromCart" method="post">
                             <input type="hidden" name="productId" value="@item.Product.Id" />
                             <button type="submit" class="btn btn-sm btn-danger">Remove</button>
                         </form>
@@ -45,16 +51,10 @@ else
                 </tr>
             }
         </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="3" class="text-end fw-bold">Grand Total:</td>
-                <td colspan="2" class="fw-bold text-success">$@Model.GrandTotal.ToString("F2")</td>
-            </tr>
-        </tfoot>
     </table>
 
-    <div class="d-flex justify-content-between">
-        <a asp-controller="Catalog" asp-action="Index" class="btn btn-secondary">Continue Shopping</a>
-        <a asp-controller="Checkout" asp-action="Index" class="btn btn-primary btn-lg">Proceed to Checkout</a>
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <h4>Total: <span class="text-success">$@Model.GrandTotal.ToString("F2")</span></h4>
+        <a asp-controller="Checkout" asp-action="Index" class="btn btn-success btn-lg">Proceed to Checkout</a>
     </div>
 }

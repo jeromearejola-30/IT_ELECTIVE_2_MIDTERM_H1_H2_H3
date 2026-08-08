@@ -1,3 +1,6 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+  </Folder>
   <Project Path="IT_ELECTIVE_2_MIDTERM_H1_H2_H3/IT_ELECTIVE_2_MIDTERM_H1_H2_H3.csproj" />
 </Solution>

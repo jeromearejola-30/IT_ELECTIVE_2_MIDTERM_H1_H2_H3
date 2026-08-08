@@ -2,7 +2,12 @@
 {
     public class ShoppingCart
     {
-        public List<CartItem> Items { get; set; } = new List<CartItem>();
-        public decimal GrandTotal => Items.Sum(item => item.TotalPrice);
+        public List<CartItem> Items { get; set; } = new();
+
+       
+        public decimal GrandTotal => Items.Sum(i => i.TotalPrice);
+
+      
+        public decimal TotalAmount => GrandTotal;
     }
 }
