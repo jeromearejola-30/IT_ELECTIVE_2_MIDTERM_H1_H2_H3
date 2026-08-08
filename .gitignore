@@ -56,3 +56,5 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 /.idea/
+/.vs
+/IT_ELECTIVE_2_MIDTERM_H1_H2_H3/.vs/IT_ELECTIVE_2_MIDTERM_H1_H2_H3.slnx
