@@ -8,7 +8,7 @@ namespace IT_ELECTIVE_2_MIDTERM_H1_H2_H3.Repositories
 
         public ShoppingCart GetCart() => _cart;
 
-        public void AddItem(Product product, int quantity)
+        public void AddToCart(Product product, int quantity)
         {
             var existingItem = _cart.Items.FirstOrDefault(i => i.Product.Id == product.Id);
             if (existingItem != null)
@@ -21,25 +21,41 @@ namespace IT_ELECTIVE_2_MIDTERM_H1_H2_H3.Repositories
             }
         }
 
+        // Method aliases in case other actions call AddItem
+        public void AddItem(Product product, int quantity) => AddToCart(product, quantity);
+
         public void UpdateQuantity(int productId, int quantity)
         {
             var item = _cart.Items.FirstOrDefault(i => i.Product.Id == productId);
             if (item != null)
             {
-                if (quantity <= 0)
+                if (quantity > 0)
                 {
-                    _cart.Items.Remove(item);
+                    item.Quantity = quantity;
                 }
                 else
                 {
-                    item.Quantity = quantity;
+                    RemoveFromCart(productId);
                 }
             }
         }
 
-        public void RemoveItem(int productId)
+        public void RemoveFromCart(int productId)
         {
-            _cart.Items.RemoveAll(i => i.Product.Id == productId);
+            var item = _cart.Items.FirstOrDefault(i => i.Product.Id == productId);
+            if (item != null)
+            {
+                _cart.Items.Remove(item);
+            }
+        }
+
+        // Method aliases in case other actions call Remove or RemoveItem
+        public void RemoveItem(int productId) => RemoveFromCart(productId);
+        public void Remove(int productId) => RemoveFromCart(productId);
+
+        public void Clear()
+        {
+            _cart.Items.Clear();
         }
     }
 }

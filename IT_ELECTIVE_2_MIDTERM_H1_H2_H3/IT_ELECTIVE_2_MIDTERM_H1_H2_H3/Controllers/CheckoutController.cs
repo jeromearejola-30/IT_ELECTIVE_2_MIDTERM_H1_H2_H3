@@ -9,11 +9,13 @@ namespace IT_ELECTIVE_2_MIDTERM_H1_H2_H3.Controllers
     {
         private readonly CartRepository _cartRepository;
         private readonly OrderRepository _orderRepository;
+        private readonly ProductRepository _productRepository;
 
-        public CheckoutController(CartRepository cartRepository, OrderRepository orderRepository)
+        public CheckoutController(CartRepository cartRepository, OrderRepository orderRepository, ProductRepository productRepository)
         {
             _cartRepository = cartRepository;
             _orderRepository = orderRepository;
+            _productRepository = productRepository;
         }
 
         [HttpGet]
@@ -22,6 +24,7 @@ namespace IT_ELECTIVE_2_MIDTERM_H1_H2_H3.Controllers
             var cart = _cartRepository.GetCart();
             if (!cart.Items.Any())
             {
+                TempData["ErrorMessage"] = "Your cart is empty. Please add products before checking out.";
                 return RedirectToAction("Index", "Cart");
             }
 
@@ -44,6 +47,25 @@ namespace IT_ELECTIVE_2_MIDTERM_H1_H2_H3.Controllers
                 return View(dto);
             }
 
+            // Verify stock levels before completing transaction
+            foreach (var item in cart.Items)
+            {
+                var product = _productRepository.GetProductById(item.Product.Id) ?? _productRepository.GetById(item.Product.Id);
+                if (product == null || product.StockQuantity < item.Quantity)
+                {
+                    ModelState.AddModelError("", $"Insufficient stock for {item.Product.Name}. Available: {product?.StockQuantity ?? 0}");
+                    ViewBag.Cart = cart;
+                    return View(dto);
+                }
+            }
+
+            // Deduct stock permanently from Product Repository
+            foreach (var item in cart.Items)
+            {
+                _productRepository.DeductStock(item.Product.Id, item.Quantity);
+            }
+
+            // Create Order / Transaction Record
             var order = new Order
             {
                 CustomerName = dto.CustomerName,
@@ -60,7 +82,9 @@ namespace IT_ELECTIVE_2_MIDTERM_H1_H2_H3.Controllers
             };
 
             _orderRepository.SaveOrder(order);
-            cart.Items.Clear();
+
+            // Clear shopping cart
+            _cartRepository.Clear();
 
             return RedirectToAction("Confirmation", new { orderId = order.OrderId });
         }
@@ -75,6 +99,14 @@ namespace IT_ELECTIVE_2_MIDTERM_H1_H2_H3.Controllers
             }
 
             return View(order);
+        }
+
+        // US-06: Transaction History
+        [HttpGet]
+        public IActionResult History()
+        {
+            var transactions = _orderRepository.GetAllOrders();
+            return View(transactions);
         }
     }
 }
