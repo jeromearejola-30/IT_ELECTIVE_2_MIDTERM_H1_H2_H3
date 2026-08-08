@@ -8,6 +8,7 @@ builder.Services.AddControllersWithViews();
 // Register Repositories as Singletons for persistent in-memory data
 builder.Services.AddSingleton<ProductRepository>();
 builder.Services.AddSingleton<CartRepository>();
+builder.Services.AddSingleton<OrderRepository>();
 
 var app = builder.Build();
 

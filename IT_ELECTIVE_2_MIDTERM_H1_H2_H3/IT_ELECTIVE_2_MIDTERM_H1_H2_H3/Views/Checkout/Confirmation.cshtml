@@ -1,0 +1,55 @@
+﻿@model IT_ELECTIVE_2_MIDTERM_H1_H2_H3.Models.Entities.Order
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+
+<div class="text-center my-5">
+    <h1 class="text-success">Thank You for Your Order!</h1>
+    <p class="lead">Your order reference number is <strong>#@Model.OrderId</strong></p>
+</div>
+
+<div class="card shadow-sm col-md-8 mx-auto">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Order Details</h4>
+    </div>
+    <div class="card-body">
+        <p><strong>Name:</strong> @Model.CustomerName</p>
+        <p><strong>Email:</strong> @Model.Email</p>
+        <p><strong>Address:</strong> @Model.ShippingAddress</p>
+        <p><strong>Payment Method:</strong> @Model.PaymentMethod</p>
+        <p><strong>Order Date:</strong> @Model.OrderDate.ToString("f")</p>
+
+        <h5 class="mt-4">Items Purchased</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>@item.ProductName</td>
+                        <td>$@item.Price.ToString("F2")</td>
+                        <td>@item.Quantity</td>
+                        <td>$@item.TotalPrice.ToString("F2")</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end fw-bold">Grand Total:</td>
+                    <td class="fw-bold text-success">$@Model.TotalAmount.ToString("F2")</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="mt-4 text-center">
+            <a asp-controller="Catalog" asp-action="Index" class="btn btn-success">Back to Home</a>
+        </div>
+    </div>
+</div>
